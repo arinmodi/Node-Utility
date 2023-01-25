@@ -1,0 +1,26 @@
+{
+  "name": "node-setup-utility",
+  "version": "1.0.0",
+  "description": "Command Line Tool For Basic Set Up Of the Node, Express, MongoDB project",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run test"
+  },
+  "keywords": [
+    "setup",
+    "mongodb",
+    "node",
+    "express",
+    "auto",
+    "command"
+  ],
+  "author": "Arin Modi",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^4.0.0",
+    "commander": "^9.4.0"
+  },
+  "bin": {
+    "node-project": "./index.js"
+  }
+}
