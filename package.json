@@ -21,6 +21,15 @@
     "commander": "^9.4.0"
   },
   "bin": {
-    "node-project": "./index.js"
-  }
+    "node-project": "./bin/index.js"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arinmodi/Node-Utility.git"
+  },
+  "bugs": {
+    "url": "https://github.com/arinmodi/Node-Utility/issues"
+  },
+  "homepage": "https://github.com/arinmodi/Node-Utility#readme"
 }
