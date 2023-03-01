@@ -1,8 +1,9 @@
 const chalk = require("chalk");
 const { spawn } = require("child_process");
 const readline = require('readline');
-const { appFileContent, indexFileContent } = require('../content/index');
-const fs = require("fs")
+const { writingToEnv } = require("../components/writingToEnv");
+const { writingToFile, makeDirectory } = require("../components/writingToFile");
+const { appFileContent, indexFileContent, utilFileContent, errorHandlerFileContent } = require('../content/index');
 
 const run = (cmd, args) => {
     return new Promise((resolve, reject) => {
@@ -95,49 +96,25 @@ const portEntering = async () => {
 }
 
 const creatingEnv = (port) => {
-    if(fs.existsSync(".env")) {
-        fs.appendFile(".env", "\nPORT=" + port, (err) => {
-            if(err) {
-                console.log(chalk.red("Error Writing Env File : " + err.message));
-            }
-    
-            console.log(chalk.blue(".env file appened..."))
-    
-            creatingAPPJS();
-        })
-    }else{
-        fs.writeFile(".env", "PORT=" + port, (err) => {
-            if(err) {
-                console.log(chalk.red("Error Writing Env File : " + err.message));
-            }
-    
-            console.log(chalk.blue(".env file created..."))
-    
-            creatingAPPJS();
-        })
-    }
+    const data = "PORT=" + port;
+    writingToEnv(data, creatingAPPJS);
 }
 
 const creatingAPPJS = () => {
-    fs.writeFile("app.js", appFileContent, (err) => {
-        if(err) {
-            console.log(chalk.red("Error Writing App File : " + err.message));
-        }
-
-        console.log(chalk.blue("app.js file created..."))
-        creatingIndexJS()
-    })
+    writingToFile("app.js", appFileContent, "Error Writing App File : ", "app.js file created...", creatingIndexJS);
 }
 
 const creatingIndexJS = () => {
-    fs.writeFile("index.js", indexFileContent, (err) => {
-        if(err) {
-            console.log(chalk.red("Error Writing Index File : " + err.message));
-        }
+    writingToFile("index.js", indexFileContent, "Error Writing Index File : ", "index.js file created...", creatingHelperFunctions);
+}
 
-        console.log(chalk.blue("index.js file created..."))
-        process.exit(0);
-    })
+const creatingHelperFunctions  = () => {
+    makeDirectory("helpers");
+    writingToFile("helpers/utils.js", utilFileContent, "Error Writing Util File at helpers/utils.js : ", "util.js file created...", creatingErrorHandlerFunctions);
+}
+
+const creatingErrorHandlerFunctions = () => {
+    writingToFile("helpers/error.js", errorHandlerFileContent, "Error Writing File at helpers/error.js : ", "error.js file created...", null);
 }
 
 

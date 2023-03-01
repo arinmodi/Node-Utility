@@ -1,8 +1,9 @@
 const { run } = require('./doTheBasics');
 const readline = require('readline');
 const chalk = require('chalk');
-const fs = require('fs');
 const { mongoDbConnectionFileContent } = require('../content/index');
+const { writingToEnv } = require('../components/writingToEnv');
+const { makeDirectory, writingToFile } = require('../components/writingToFile');
 
 const doTheMongoSetUp = () => {
     console.log(chalk.green("Installing Mongoose..."));
@@ -74,42 +75,17 @@ const takeDBName = (url) => {
     });
     rl.on('close' , () => {
         if(name !== undefined) {
-            writingToEnv(url, name);
+            const data = `MONGO_Url=${url}\nDB_NAME=${name}`;
+            writingToEnv(data, creatingDBConnectionFile);
         }
     })
-}
-
-const writingToEnv = (url, name) => {
-    if(fs.existsSync(".env")) {
-        fs.appendFile(".env", `\nMONGO_Url=${url}\nDB_NAME=${name}`, (err) => {
-            if(err) {
-                console.log(chalk.red("Error Writing Env File : " + err.message));
-            }
-            creatingDBConnectionFile()
-            console.log(chalk.blue(".env file appened..."))
-        })
-    }else{
-        fs.writeFile(".env", `MONGO_Url=${url}\nDB_NAME=${name}`, (err) => {
-            if(err) {
-                console.log(chalk.red("Error Writing Env File : " + err.message));
-            }
-            creatingDBConnectionFile()
-            console.log(chalk.blue(".env file created..."))
-    
-        })
-    }
 }
 
 const creatingDBConnectionFile = () => {
-    fs.mkdirSync("database");
-    fs.writeFile("database/dbConnection.js", mongoDbConnectionFileContent, (err) => {
-        if(err) {
-            console.log(chalk.red("Error Writing Connection File : " + err.message));
-        }
-
-        console.log(chalk.blue("connection file created at database/dbConnection"))
-        process.exit(0);
-    })
+    makeDirectory("database");
+    const errorMessage = "Error Writing MongoDB Connection File : ";
+    const successMessage = "connection file created at database/mongodbConnection.js";
+    writingToFile("database/mongodbConnection.js", mongoDbConnectionFileContent, errorMessage, successMessage, null);
 }
 
 module.exports = { doTheMongoSetUp }

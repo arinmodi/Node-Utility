@@ -64,7 +64,7 @@ const indexFileContent = '' +
 'server.listen(port);\n' +
 'server.on("error", onError);\n' +
 'server.on("listening", onListening);\n\n' +
-'module.exports = app;' 
+'module.exports = app;';
 
 const mongoDbConnectionFileContent = 
     'const mongoose = require("mongoose");\n' + 
@@ -72,6 +72,8 @@ const mongoDbConnectionFileContent =
     'require("dotenv").config();\n\n' + 
     
     'const connect = () => {\n\n' +
+
+        '/t	mongoose.set("strictQuery", true);\n\n' +
 
         '\tmongoose.connect(process.env.MONGO_URL, {\n'  
             + '\t\tdbName : process.env.DB_NAME\n' + 
@@ -106,6 +108,130 @@ const mongoDbConnectionFileContent =
         
     '}\n\n' +  
     
-    'module.exports = connect();'
+    'module.exports = connect();';
 
-module.exports = { appFileContent, indexFileContent,  mongoDbConnectionFileContent}
+const utilFileContent = `/**
+ * @param {string} obj
+ * @param {string} key
+ * @param {string} defaultString
+ * @returns {string}
+ */
+ 
+ const replaceWithStrInObj = (obj, key, defaultString) => (obj[key] ? obj[key] : defaultString);
+
+ /**
+  * @param {string} obj
+  * @param {string} key
+  * @returns {string}
+  */
+ const replaceWithBlankStrInObj = (obj, key) => replaceWithStrInObj(obj, key, '');
+ 
+module.exports =  { replaceWithBlankStrInObj, replaceWithStrInObj };
+`;
+
+const errorHandlerFileContent = `const utils = require('./utils');
+
+class ErrorHandler extends Error {
+    constructor(errorType, error) {
+        super();
+        this.errorType = errorType;
+        this.statusCode = utils.replaceWithStrInObj(error, 'statusCode', 500);
+        this.message = utils.replaceWithBlankStrInObj(error, 'message');
+        this.user = utils.replaceWithBlankStrInObj(error, 'user');
+        this.errStack = utils.replaceWithBlankStrInObj(error, 'errStack');
+    }
+}
+
+const errorHandler = (err, _req, res, _next) => {
+    res.status(err.statusCode).json(err);
+};
+
+module.exports = { ErrorHandler, errorHandler };`;
+
+const authMiddleWareFileContent = `const to = require('await-to-js').default;
+const { sign, verify } = require('jsonwebtoken');
+const { ErrorHandler } = require('../helpers/errors')
+const constants = require('../constants');
+require("dotenv").config();
+
+const generateJWT = (payload, expiry = process.env.JWT_EXPIRES_IN) =>
+  sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: expiry });
+
+const getTokenFromHeader = async (req) => {
+  if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
+    return req.headers.authorization.split(' ')[1];
+  }
+  
+  const error = new ErrorHandler(constants.ERRORS.AUTH, {
+    statusCode: 401,
+    message: 'Missing or invalid authentication header',
+  });
+
+  throw error;
+};
+
+const verifyToken = async (token) => verify(token, process.env.JWT_SECRET_KEY);
+
+const authMiddleware = async (req, res, next) => {
+  const [err, token] = await to(getTokenFromHeader(req));
+  if (err) {
+    next(err);
+  }
+
+  const [err2, payload] = await to(verifyToken(token));
+  if (err2) {
+    const error = new ErrorHandler(constants.ERRORS.AUTH, {
+      statusCode: 401,
+      errStack: err2,
+      message: 'JWT authentication failed',
+    });
+    next(error);
+  }
+  res.locals.decode = payload;
+  next();
+};
+
+module.exports = { authMiddleware, generateJWT, verifyToken, getTokenFromHeader };`;
+
+const mySQLConnectionFileContent = 
+'const mysql = require("mysql");\n' + 
+'const chalk = require("chalk");\n' +
+'require("dotenv").config();\n\n' +
+
+'const connect = () => {\n\n' + 
+'\tconst host = process.env.DBHost;\n' +
+'\tconst port = process.env.DBPort;\n' +
+'\tconst database = process.env.DBName;\n' +
+'\tconst username = process.env.DBUserName;\n' + 
+'\tconst password = process.env.DBPassword;\n\n' +
+
+'\tconst connection = mysql.createConnection({\n' + 
+'\t\thost : host,\n' +
+'\t\tport : port,\n' +
+'\t\tdatabase : database,\n' +
+'\t\tuser : username,\n' +
+'\t\tpassword : password\n' +
+'\t});\n\n' +
+
+'\tconnection.connect((err) => {\n' +
+'\t\tconst configs = `\\nhost : ${host}\\nport : ${port}\\ndatabase : ${database}\\nuser : ${username}\\npassword : ${password}`;\n' +
+'\t\tif (err) {\n' +
+'\t\t\tconsole.log(chalk.yellow(`Error Connecting To MySQL Database With Following Configs, ${configs}`));\n' + 
+'\t\t\tconsole.log(chalk.red(`Error : ` + err.message));\n' +
+'\t\t} else {\n' +
+'\t\t\tconsole.log(chalk.green(`MySQL successfully connected with ${database}`));\n' +
+'\t\t}\n' +
+'\t});\n\n' +
+'}\n\n' +
+
+'module.exports = connect();';
+
+module.exports = { 
+  appFileContent, 
+  indexFileContent,  
+  mongoDbConnectionFileContent, 
+  errorHandlerFileContent, 
+  utilFileContent,
+  authMiddleWareFileContent,
+  mySQLConnectionFileContent
+};
