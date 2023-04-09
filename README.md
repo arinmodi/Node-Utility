@@ -93,3 +93,57 @@ require("path of your database/mysqlConnection.js");
 ```
 
 #### Note : You can access your inputs and also modify in .env file.
+
+<br>
+
+### 4. Get Functions To Work With JWT:
+
+#### :warning: To Use this, You will need our helper function which is only available if you setup project using our tool. In Future, we will add functionality to setup only helper functions, but currently you can't use this feature if you haven't setup your project using our tool.
+
+#### Step 1 : Run Following Command, It will ask for JWT Secret
+```
+node-project jwt
+```
+
+#### Step 2 : Once last command completes it's execution, JWT functions will be available at middleware/auth.js.
+#### Default Expiry is set to 24h, you can change it in the .env file.
+
+#### How to Use this functions ?
+
+- Generate JWT Token : Import generateJWT function from middleware.auth.js and Prepare Payload as pass it to function as below
+#### example:
+```
+const { generateJWT } = require("./middleware/auth.js");
+
+// create payload
+const payload = {
+        name : "demo",
+        email : "email",
+        isSuperAdmin : false,
+};
+
+// generate token
+const token = generateJWT(payload);
+```
+- payload can contain any information of your choice, which you can access when decrypting token.
+- you can send this token to client and when client access any route which require authorized user, you can use our authMiddleware, which will verify user is authorized or not, if authorized you can access it's payload which you set during generating that token in your route. If not authorized it will generate error.
+
+#### example:
+```
+router.patch("/profile", validator(updateUserSchema), authMiddleware, Update);
+```
+
+- verify token by your self : 
+```
+const to = require("await-to-js").default;
+const { verifyToken } = require("./middlewares/auth");
+
+// access token
+const { token } = req.body;
+// verify token
+const [error, payload] = await to(verifyToken(token));
+```
+
+- if token valid in above code, error object will be null and you can use payload. Otherwise, error will have some message.
+
+#### Note : You can access your inputs and also modify in .env file.
