@@ -3,16 +3,8 @@
 <br>
 <br>
 <div style="display: flex; flex-direction: row;">
-  &emsp;
-  &emsp;
-  &emsp;
-  &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
-  <img src="https://user-images.githubusercontent.com/61725413/230785991-24035722-69ef-4bc1-b70a-c2846af26687.png" width=200 />
-  &emsp;
-  &emsp;
-  &emsp;
-  &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
-  <img src="https://user-images.githubusercontent.com/61725413/230786325-30bcfe83-9ac0-4756-a92d-76de8d8fbc31.png" width=200 />
+  <img src="https://user-images.githubusercontent.com/61725413/230785991-24035722-69ef-4bc1-b70a-c2846af26687.png" width=20% hspace=15%/>
+  <img src="https://user-images.githubusercontent.com/61725413/230786325-30bcfe83-9ac0-4756-a92d-76de8d8fbc31.png" width=20% hspace=5%/>
 </div>
 <br>
 <br>
