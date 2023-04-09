@@ -30,7 +30,7 @@ npm i -g node-setup-utility
 
 <br>
 
-### Set up new NODE JS Project:
+### 1. Set up new NODE JS Project:
 
 #### Step 1 : Intilize Node Project By Running Following Command and Give Necessary Details For package.json
 ```
@@ -59,3 +59,37 @@ node-project basic
 ```
 node index.js
 ```
+
+<br>
+
+### 2. Establish MongoDB Connection:
+
+#### Step 1 : Run Following Command, It will ask for mongoDB url and DB name, you will need to enter it when asked
+```
+node-project mongocon
+```
+
+#### Step 2 : Once last command completes it's execution, connection file can be accessed at database/mongodbConnection.js.
+#### Now You can use it anywehre in the project, recommanded way is to include in in the app.js file using following way.
+```
+require("path of your database/mongodbConnection.js");
+```
+
+#### Note : You can access your input and also modify in .env file.
+
+<br>
+
+### 3. Establish MySQL Connection:
+
+#### Step 1 : Run Following Command, It will ask for MySQL connection configurations, you will need to enter it when asked
+```
+node-project mysqlcon
+```
+
+#### Step 2 : Once last command completes it's execution, connection file can be accessed at database/mysqlConnection.js.
+#### Now You can use it anywehre in the project, recommanded way is to include in in the app.js file using following way.
+```
+require("path of your database/mysqlConnection.js");
+```
+
+#### Note : You can access your inputs and also modify in .env file.
