@@ -73,7 +73,7 @@ const mongoDbConnectionFileContent =
     
     'const connect = () => {\n\n' +
 
-        '/t	mongoose.set("strictQuery", true);\n\n' +
+        '\tmongoose.set("strictQuery", true);\n\n' +
 
         '\tmongoose.connect(process.env.MONGO_URL, {\n'  
             + '\t\tdbName : process.env.DB_NAME\n' + 
