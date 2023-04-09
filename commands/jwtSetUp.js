@@ -42,7 +42,7 @@ const takeJwtSecert = () => {
     });
     rl.on('close' , () => {
         if(secert !== undefined) {
-            let data = "JWT_SECERT="+secert;
+            let data = "JWT_SECERT="+secert+"\nJWT_EXPIRES_IN=24h";
             writingToEnv(data, writeToAuth);
         }
     })
